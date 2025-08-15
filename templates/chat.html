@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Dungeon Master</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+<script src="{{ url_for('static', filename='chat.js') }}" defer></script>
+
+</head>
+<body>
+
+<div id="chat-container" aria-live="polite" aria-label="Chat messages"></div>
+
+<div id="input-container">
+    <input id="player-input" type="text" placeholder="Type your action..." aria-label="Your message to the Dungeon Master">
+    <button id="send-btn">Send</button>
+</div>
+
+<script>
+const chatContainer = document.getElementById('chat-container');
+const playerInput = document.getElementById('player-input');
+const sendBtn = document.getElementById('send-btn');
+
+function appendMessage(text, sender) {
+    const msg = document.createElement('div');
+    msg.classList.add('message', sender);
+    msg.textContent = text;
+    chatContainer.appendChild(msg);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+async function sendMessage() {
+    const text = playerInput.value.trim();
+    if (!text) return;
+
+    appendMessage(text, 'player');
+    playerInput.value = '';
+    sendBtn.disabled = true;
+
+    try {
+        const res = await fetch('/message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+        });
+
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        appendMessage(data.reply, 'dm');
+
+    } catch (err) {
+        appendMessage(`Error: ${err.message}`, 'dm');
+    } finally {
+        sendBtn.disabled = false;
+        playerInput.focus();
+    }
+}
+
+sendBtn.addEventListener('click', sendMessage);
+playerInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendMessage();
+});
+</script>
+
+</body>
+</html>

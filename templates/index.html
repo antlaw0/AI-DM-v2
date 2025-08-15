@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Dungeon Master</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+
+</head>
+<body>
+
+<div id="chat-container" aria-live="polite" aria-label="Chat messages"></div>
+
+<div id="input-container">
+<form id="chat-form">
+    <input id="chat-input" type="text" placeholder="Type your action..." aria-label="Your message to the Dungeon Master">
+    <button type="submit">Send</button>
+</form>
+
+</div>
+
+<script src="{{ url_for('static', filename='chat.js') }}" defer></script>
+
+
+</body>
+</html>
